@@ -1,36 +1,30 @@
 import java.util.*;
-import java.io.*;
 
 class Solution {
-    public String[] solution(String[] record) {
-    HashMap<String,String> map = new HashMap<>();
-		 int length = record.length;
-		 List <String> temps = new ArrayList<>();
-		 String[] temp = {};
-	     for(int i=0;i<length;i++){
-	     	String s = record[i];
-	        temp = s.split(" ");
-	        if(temp.length>=3) {
-	        	map.put(temp[1], temp[2]);
-	        }
-	        if(temp[0].equals("Enter")) {
-	          	temps.add("E"+temp[1]);
-	        }else if(temp[0].equals("Leave")) {
-	           	temps.add("L"+temp[1]);
-	        }
-	     }
+    public List<String> solution(String[] record) {
+        List<String> name_list = new ArrayList<>();
+        HashMap<String, String> map = new HashMap<>();
+        List<String> answer = new ArrayList<>();
         
-	     String[] answer = new String[temps.size()];
-	     for(int i=0;i<temps.size();i++) {
-	    	 String how = temps.get(i).substring(0,1);
-	    	 String nickname = temps.get(i).replaceFirst(how, "");
-	    	 nickname = map.get(nickname);
-	    	 if(how.equals("E")) {
-	    		 answer[i] = nickname+"님이 들어왔습니다.";
-	    	 }else {
-	    		 answer[i] = nickname+"님이 나갔습니다.";
-	    	 }
-	     }
+        for(int i=0; i<record.length; i++){
+            String[] temp = record[i].split(" ");
+            if(temp[0].equals("Enter")){
+                name_list.add("E"+temp[1]);
+                map.put(temp[1],temp[2]);
+            }else if(temp[0].equals("Leave")){
+                name_list.add("L"+temp[1]);
+            }else{
+                map.put(temp[1],temp[2]);
+            }
+        }
+        
+        for(int i=0; i<name_list.size(); i++){
+            if(name_list.get(i).substring(0,1).equals("E")){
+                answer.add(map.get(name_list.get(i).substring(1,name_list.get(i).length()))+"님이 들어왔습니다.");
+            }else{
+                answer.add(map.get(name_list.get(i).substring(1, name_list.get(i).length()))+"님이 나갔습니다.");
+            }
+        }
         return answer;
     }
 }
