@@ -1,14 +1,13 @@
 import java.util.*;
 
 class Solution {
-    public int[] solution(long n) {
-        String tmp = String.valueOf(n);
-        StringBuffer sb = new StringBuffer(tmp);
-        String reverse = sb.reverse().toString();
-        int[] answer = new int[reverse.length()];
-        for(int i=0; i<reverse.length(); i++){
-            answer[i] = Integer.valueOf(reverse.substring(i,i+1));
+    public List<Integer> solution(long n) {
+        List<Integer> list = new ArrayList<>();
+        String[] tmp = String.valueOf(n).split("");
+        int[] answer = new int[tmp.length];
+        for(int i=tmp.length-1; i>=0; i--){
+            list.add(Integer.valueOf(tmp[i]));
         }
-        return answer;
+        return list;
     }
 }
