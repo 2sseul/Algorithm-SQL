@@ -41,14 +41,17 @@ public class Main {
 		for(int i=0; i<N; i++) {
 			for(int j=0; j<N; j++) {
 				if(map[i][j].equals("R") && !visited[i][j]) {
-					bfs(i, j, "G", "B");
+					//bfs(i, j, "G", "B");
+					dfs(i, j, "G", "B");
 					num++;
 				}
 				else if(map[i][j].equals("G") && !visited[i][j]) {
-					bfs(i, j, "R", "B");
+					//bfs(i, j, "R", "B");
+					dfs(i, j, "R", "B");
 					num++;
 				}else if(map[i][j].equals("B") && !visited[i][j]){
-					bfs(i, j, "R", "G");
+					//bfs(i, j, "R", "G");
+					dfs(i, j, "R", "G");
 					num++;
 					rgbNum++;
 				}
@@ -59,7 +62,8 @@ public class Main {
 			for(int j=0; j<N; j++) {
 				if(map[i][j].equals("R") || map[i][j].equals("G")) {
 					if(!visitedRGB[i][j]) {
-						rgbBFS(i, j, "B");
+						//rgbBFS(i, j, "B");
+						rgbDFS(i, j, "B");
 						rgbNum++;
 					}
 				}
@@ -114,6 +118,38 @@ public class Main {
 				visitedRGB[newX][newY] = true;
 			}
 			
+		}
+	}
+	
+	static void dfs(int x, int y, String nonColor1, String nonColor2) {
+		visited[x][y] = true;
+		
+		for(int i=0; i<4; i++) {
+			int newX = x + xR[i];
+			int newY = y + yC[i];
+			
+			if(newX < 0 || newX >= N || newY < 0 || newY >= N || visited[newX][newY] ||  map[newX][newY].equals(nonColor1) || map[newX][newY].equals(nonColor2)) {
+				continue;
+			}
+			
+			dfs(newX, newY, nonColor1, nonColor2);
+
+		}
+	}
+	
+	static void rgbDFS(int x, int y, String nonColor) {
+		visitedRGB[x][y] = true;
+		
+		for(int i=0; i<4; i++) {
+			int newX = x + xR[i];
+			int newY = y + yC[i];
+			
+			if(newX < 0 || newX >= N || newY < 0 || newY >= N || visitedRGB[newX][newY] ||  map[newX][newY].equals(nonColor)) {
+				continue;
+			}
+			
+			rgbDFS(newX, newY, nonColor);
+
 		}
 	}
 }
