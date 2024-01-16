@@ -22,7 +22,6 @@ public class Main {
 		
 		while(true) {
 			StringTokenizer st = new StringTokenizer(br.readLine());
-			//String tmp = br.readLine();
 			
 			w = Integer.parseInt(st.nextToken());
 			h = Integer.parseInt(st.nextToken());
@@ -47,8 +46,8 @@ public class Main {
 			for(int i=0; i<h; i++) {
 				for(int j=0; j<w; j++) {
 					if(map[i][j] == 1 && !visited[i][j]) {
-						BFS(i,j);
-						//DFS(i,j);
+						//BFS(i,j);
+						DFS(i,j);
 						cnt++;
 					}
 				}
