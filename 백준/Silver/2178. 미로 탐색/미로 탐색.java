@@ -1,76 +1,62 @@
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.Queue;
-import java.util.StringTokenizer;
+import java.io.*;
+import java.util.*;
+
 public class Main {
-	static int N;
-	static int M;
+	static int N, M;
 	static int map[][];
 	static boolean visited[][];
-	public static class Node{
+	static int goX[] = {0, 0, -1, 1};
+	static int goY[] = {-1, 1, 0, 0};
+	static class Node{
 		int x;
 		int y;
-		int cnt;
-		Node(int x, int y, int cnt){
+		Node(int x, int y){
 			this.x = x;
 			this.y = y;
-			this.cnt = cnt;
 		}
 	}
-	public static void main(String[] args) throws IOException {
+	public static void main(String[] args) throws Exception{
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-		
 		StringTokenizer st = new StringTokenizer(br.readLine());
 		
 		N = Integer.parseInt(st.nextToken());
 		M = Integer.parseInt(st.nextToken());
 		
-		
 		map = new int[N][M];
 		visited = new boolean[N][M];
 		
-		for(int i=0;i<N;i++) {
-			String s = br.readLine();
-			for(int j=0;j<M;j++) {
-				map[i][j] =Character.getNumericValue(s.charAt(j));
+		for(int i=0; i<N; i++) {
+			String tmp = br.readLine();
+			for(int j=0; j<M; j++) {
+				map[i][j] = tmp.charAt(j)-'0';
 			}
 		}
 		
+		BFS(0,0);
+		
+		System.out.println(map[N-1][M-1]);
+	}
+	
+	static void BFS(int x, int y) {
 		Queue<Node> queue = new LinkedList<>();
-		queue.add(new Node(0,0,1));
-		visited[0][0]=true;
+		queue.add(new Node(x, y));
 		
 		while(!queue.isEmpty()) {
-			Node n = queue.poll();
+			Node node = queue.poll();
+			visited[node.x][node.y] = true;
 			
-			if(n.x == N-1 && n.y == M-1) {
-				System.out.println(n.cnt);
-				return;
-			}
-			
-			int row[] = {-1, 1, 0, 0};
-			int col[] = {0, 0, -1, 1};
-			
-			for(int i=0;i<4;i++) {
-				int new_row = n.x + row[i];
-				int new_col = n.y + col[i];
+			for(int i=0; i<4; i++) {
+				int newX = node.x + goX[i];
+				int newY = node.y + goY[i];
 				
-				if(new_row<0 || new_row>=N || new_col<0 || new_col>=M) {
+				if(newX < 0 || newX >= N || newY < 0 || newY >= M || map[newX][newY] == 0 || visited[newX][newY]) {
 					continue;
 				}
 				
-				if(map[new_row][new_col]==0 || visited[new_row][new_col]) {
-					continue;
-				}
-				
-				
-				queue.add(new Node(new_row,new_col,n.cnt+1));
-				visited[new_row][new_col] = true;
+				map[newX][newY] = map[node.x][node.y] +1;
+				visited[newX][newY] = true;
+				queue.add(new Node(newX, newY));
 			}
-			
 		}
 	}
 }
