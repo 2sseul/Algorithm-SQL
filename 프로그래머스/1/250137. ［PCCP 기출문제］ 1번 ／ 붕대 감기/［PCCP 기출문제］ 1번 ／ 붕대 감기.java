@@ -29,6 +29,9 @@ class Solution {
                         heal_cnt = 0;
                         now_health += heal_bonus;
                     }
+                    if(now_health > health){
+                        now_health = health;
+                    }
                 }else{
                     heal_cnt++;
                     now_health = health;
