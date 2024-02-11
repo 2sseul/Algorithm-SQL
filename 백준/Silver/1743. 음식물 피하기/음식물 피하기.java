@@ -13,14 +13,6 @@ public class Main {
 	static int cnt;
 	static int goX[] = {-1, 1, 0, 0};
 	static int goY[] = {0, 0, -1, 1};
-	static class Node{
-		int x;
-		int y;
-		Node(int x, int y){
-			this.x = x;
-			this.y = y;
-		}
-	}
 	public static void main(String[] args) throws Exception{
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 		StringBuilder sb = new StringBuilder();
@@ -44,7 +36,7 @@ public class Main {
 			for(int j=0; j<n; j++) {
 				if(map[i][j] == 1 && !visited[i][j]) {
 					cnt = 1;
-					BFS(i, j);
+					DFS(i, j);
 					answer = Math.max(cnt, answer);
 					cnt = 0;
 				}
@@ -54,26 +46,19 @@ public class Main {
 		sb.append(answer);
 		System.out.println(sb.toString());
 	}
-	static void BFS(int x, int y) {
-		Queue<Node> queue = new LinkedList<>();
-		queue.offer(new Node(x, y));
+	static void DFS(int x, int y) {
+		visited[x][y] = true;
 		
-		while(!queue.isEmpty()) {
-			Node node = queue.poll();
-			visited[node.x][node.y] = true;
+		for(int i=0; i<4; i++) {
+			int newX = x + goX[i];
+			int newY = y + goY[i];
 			
-			for(int i=0; i<4; i++) {
-				int newX = node.x + goX[i];
-				int newY = node.y + goY[i];
-				
-				if(newX<0 || newX >=m || newY<0 || newY>=n || visited[newX][newY] || map[newX][newY] == 0) {
-					continue;
-				}
-				
-				cnt++;
-				queue.add(new Node(newX, newY));
-				visited[newX][newY] = true;
+			if(newX<0 || newX >=m || newY<0 || newY>=n || visited[newX][newY] || map[newX][newY] == 0) {
+				continue;
 			}
+			
+			cnt++;
+			DFS(newX, newY);
 		}
 	}
 }
