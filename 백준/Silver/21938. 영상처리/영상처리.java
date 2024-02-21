@@ -1,58 +1,49 @@
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.Arrays;
-import java.util.StringTokenizer;
+import java.io.*;
+import java.util.*;
 
 public class Main {
 	static int N, M;
-	static int video[][];
+	static int line;
+	static int tmp[][];
+	static int map[][];
 	static boolean visited[][];
-	static int standard;
-	static int moveR[] = {-1,1,0,0};
-	static int moveC[] = {0,0,-1,1};
-	public static void main(String[] args) throws IOException {
+	static int goX[] = {-1, 1, 0, 0};
+	static int goY[] = {0, 0, -1, 1};
+	static class AVI{
+		int x;
+		int y;
+		AVI(int x, int y){
+			this.x = x;
+			this.y = y;
+		}
+	}
+	public static void main(String[] args) throws Exception{
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-		StringTokenizer st;
 		
-		st = new StringTokenizer(br.readLine());
+		StringTokenizer st = new StringTokenizer(br.readLine());
 		N = Integer.parseInt(st.nextToken());
-		M = Integer.parseInt(st.nextToken())*3;
+		M = Integer.parseInt(st.nextToken());
 		
-		video = new int[N][M];
-		visited = new boolean[N][M];
+		tmp = new int[N][M*3];
+		map = new int[N][M];
+		visited = new boolean[N][M*3];
 		
-		for(int i=0;i<N;i++) {
+		for(int i=0; i<N; i++) {
 			st = new StringTokenizer(br.readLine());
-			for(int j=0;j<M;j++) {
-				video[i][j] = Integer.parseInt(st.nextToken());
+			for(int j=0; j<M*3; j++) {
+				tmp[i][j] = Integer.parseInt(st.nextToken());
 			}
 		}
 		
-		standard = Integer.parseInt(br.readLine());
+		line = Integer.parseInt(br.readLine());
 		
-		for(int i=0;i<N;i++) {
-			for(int j=0;j<M-2;j+=3) {
-				int rgb = (video[i][j]+video[i][j+1]+video[i][j+2])/3;
-				if(rgb < standard) {
-					video[i][j]=0;
-					video[i][j+1]=0;
-					video[i][j+2]=0;
-				}else {
-					video[i][j]=255;
-					video[i][j+1]=255;
-					video[i][j+2]=255;
-				}
-			}
-		}
+		Change();
 		
-		
-		int cnt =0;
-		
-		for(int i=0;i<N;i++) {
-			for(int j=0;j<M;j++) {
-				if(video[i][j]==255 && !visited[i][j]) {
-					count(i,j);
+		int cnt = 0;
+		for(int i=0; i<N; i++) {
+			for(int j=0; j<M; j++) {
+				if(map[i][j] == 255 && !visited[i][j]) {
+					BFS(i, j);
 					cnt++;
 				}
 			}
@@ -61,23 +52,41 @@ public class Main {
 		System.out.println(cnt);
 		
 	}
-	private static void count(int x, int y) {
-		visited[x][y] = true;
+	static void BFS(int x, int y) {
+		Queue<AVI> queue = new LinkedList<>();
+		queue.offer(new AVI(x, y));
 		
-		for(int i=0;i<4;i++) {
-			int newX = x + moveR[i];
-			int newY = y + moveC[i];
+		while(!queue.isEmpty()) {
+			AVI a = queue.poll();
+			visited[a.x][a.y] = true;
 			
-			if(newX<0 || newX>=N || newY<0 || newY>=M || visited[newX][newY] || video[newX][newY]==0) {
-				continue;
+			for(int i=0; i<4; i++) {
+				int newX = a.x + goX[i];
+				int newY = a.y + goY[i];
+				
+				if(newX < 0 || newX >= N || newY <0 || newY >=M || map[newX][newY] == 0 || visited[newX][newY]) {
+					continue;
+				}
+				
+				queue.offer(new AVI(newX, newY));
+				visited[newX][newY] = true;
 			}
 			
-			if(video[newX][newY]==255 && !visited[newX][newY]) {				
-				visited[newX][newY] = true;
-				count(newX,newY);
+		}
+	}
+	static void Change() {
+		for(int i=0; i<N; i++) {
+			for(int j=0; j<M*3; j+=3) {
+				int sum = 0;
+				for(int k=0; k<3; k++) {
+					sum += tmp[i][j+k];
+				}
+				if(sum/3>=line) {
+					map[i][j/3] = 255;
+				}else {
+					map[i][j/3] = 0;
+				}
 			}
 		}
-		
 	}
-	
 }
