@@ -1,50 +1,63 @@
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.List;
-import java.util.Map;
-import java.util.StringTokenizer;
-import java.util.TreeMap;
-import java.util.stream.Collectors;
+import java.io.*;
+import java.util.*;
 
 public class Main {
-	public static void main(String[] args) throws IOException {
+	public static void main(String[] args) throws Exception{
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-		StringTokenizer st;
-		Map<String,Integer> map = new TreeMap<>();
-		
-		st = new StringTokenizer(br.readLine());
+		BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+		StringBuilder sb = new StringBuilder();
+		Map<String, Integer> map = new HashMap<>();
+		List<String> list = new ArrayList<>();
+		PriorityQueue<String> pq = new PriorityQueue<>(new Comparator<>(){
+			public int compare(String o1, String o2) {
+				if(map.get(o1) > map.get(o2)) {
+					return -1;
+				}else if(map.get(o1) < map.get(o2)) {
+					return 1;
+				}else {
+					if(o1.length() < o2.length()) {
+						return 1;
+					}else if(o1.length() > o2.length()) {
+						return -1;
+					}else {
+						return o1.compareTo(o2);
+					}
+				}
+			}
+		});
+		StringTokenizer st = new StringTokenizer(br.readLine());
 		int N = Integer.parseInt(st.nextToken());
 		int M = Integer.parseInt(st.nextToken());
 		
-		for(int i=0;i<N;i++) {
-			String s = br.readLine();
-			if(s.length()>=M&&map.containsKey(s)) {
-				map.put(s, map.get(s)+1);
-			}else if(s.length()>=M&&!map.containsKey(s)) {
-				map.put(s, 1);
-			}
-		}
-		
-		List<String> list = map.keySet().stream().collect(Collectors.toList());
-		list.sort((s1,s2)->{
-			int num1 = map.get(s1);
-			int num2 = map.get(s2);
+		for(int tc=0; tc<N; tc++) {
+			String tmp = br.readLine();
 			
-			if(num1 == num2) {
-				if(s1.length() == s2.length()) {
-					return s1.compareTo(s2);
-				}
-				return s2.length()-s1.length();
+			if(tmp.length() < M) {
+				continue;
 			}
-			return num2-num1;
-		});
-		
-		StringBuilder sb = new StringBuilder();
-		for(int i=0;i<list.size();i++) {
-			sb.append(list.get(i)).append('\n');
+			
+			if(!map.containsKey(tmp)) {
+				map.put(tmp, 1);
+			}else {
+				map.put(tmp, map.get(tmp)+1);
+			}
 		}
-		System.out.println(sb.toString());
 		
+
+		list.addAll(map.keySet());
+		
+		for(int i=0; i<list.size(); i++) {
+			String word = list.get(i);
+			pq.offer(word);
+		}
+		
+		while(!pq.isEmpty()) {
+			String word = pq.poll();
+			sb.append(word).append('\n');
+		}
+		
+		bw.write(sb.toString());
+		bw.flush();
+		bw.close();
 	}
 }
