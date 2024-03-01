@@ -2,7 +2,6 @@ import java.io.*;
 import java.util.*;
 
 public class Main {
-	static boolean visited[];
 	static int N, M, ans;
 	static class Node{
 		int x;
@@ -19,7 +18,6 @@ public class Main {
 		StringTokenizer st = new StringTokenizer(br.readLine());
 		N = Integer.parseInt(st.nextToken());
 		M = Integer.parseInt(st.nextToken());
-		visited = new boolean[1000000001];
 		ans = 0;
 		
 		BFS(M, 0);
@@ -38,7 +36,6 @@ public class Main {
 	static void BFS(int x, int count) {
 		Queue<Node> queue = new LinkedList<>();
 		queue.offer(new Node(x, count));
-		visited[x] = true;
 		
 		while(!queue.isEmpty()){
 			Node n = queue.poll();
@@ -46,6 +43,10 @@ public class Main {
 				ans = n.cnt;
 				return;
 			}
+			if(n.x < N) {
+				return;
+			}
+			
 			int newX = 0;
 			if(n.x % 2 == 0) {
 				newX = n.x / 2;
@@ -55,12 +56,11 @@ public class Main {
 				newX = n.x / 10;
 			}
 			
-			if(newX < 0 || visited[newX]) {
+			if(newX < 0) {
 				continue;
 			}
 			
 			queue.offer(new Node(newX, n.cnt+1));
-			visited[newX] = true;
 		}
 	}
 }
