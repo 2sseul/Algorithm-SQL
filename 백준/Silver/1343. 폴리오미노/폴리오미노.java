@@ -1,25 +1,25 @@
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.*;
+import java.util.*;
 
 public class Main {
-	public static void main(String[] args) throws IOException {
+	public static void main(String[] args) throws Exception{
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+		BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+		StringBuilder sb = new StringBuilder();
 		
-		String s = br.readLine();
+		String tmp = br.readLine();
 		
-		String ans = "";
+		tmp = tmp.replaceAll("XXXX", "AAAA");
+		tmp = tmp.replaceAll("XX", "BB");
 		
-		String aaaa = "AAAA";
-		String bb = "BB";
-		
-		s = s.replaceAll("XXXX", aaaa);
-		ans = s.replaceAll("XX", bb);
-		
-		if(ans.contains("X")) {
-			ans = "-1";
+		if(tmp.contains("X")) {
+			sb.append(-1);
+		}else {
+			sb.append(tmp);
 		}
 		
-		System.out.println(ans);
+		bw.write(sb.toString());
+		bw.flush();
+		bw.close();
 	}
 }
