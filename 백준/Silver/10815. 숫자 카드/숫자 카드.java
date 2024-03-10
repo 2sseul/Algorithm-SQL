@@ -26,7 +26,7 @@ public class Main {
 		for(int i=0; i<M; i++) {
 			int now = Integer.parseInt(st.nextToken());
 			
-			Search(now, 0, N-1);
+			Search2(now, 0, N-1);
 			
 			sb.append(ans).append(" ");
 		}
@@ -51,5 +51,23 @@ public class Main {
 			ans = 0;
 			return;
 		}
+	}
+	static void Search2(int key, int low, int high) {
+		while(low <= high) {
+			
+			int mid = (high + low)/2;
+			
+			if(key == list.get(mid)) {
+				ans = 1;
+				return;
+			}else if(key < list.get(mid)) {
+				high = mid-1;
+			}else {
+				low = mid+1;
+			}
+		}
+		
+		ans = 0;
+		return;
 	}
 }
