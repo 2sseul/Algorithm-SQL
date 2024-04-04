@@ -1,28 +1,60 @@
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.*;
+import java.util.*;
 
 public class Main {
-	public static void main(String[] args) throws NumberFormatException, IOException {
+	static int N;
+	static int arr[];
+	static boolean visited[];
+	public static void main(String[] args) throws Exception{
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+		BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
 		
-		int X = Integer.parseInt(br.readLine());
+		StringBuilder sb = new StringBuilder();
 		
-		int dp[] = new int[X+1];
-		dp[0]=0;
-		dp[1]=0;
-		int ans = Integer.MAX_VALUE;
+		N = Integer.parseInt(br.readLine());
 		
-		for(int i=2; i<=X;i++) {
-			dp[i] = dp[i-1]+1;
-			
-			if(i%3==0) {
-				dp[i]=Math.min(dp[i], dp[i/3]+1);
-			}
-			if(i%2==0) {
-				dp[i]=Math.min(dp[i], dp[i/2]+1);
+		arr = new int[1000001];
+		visited = new boolean[1000001];
+		
+		Go(N);
+		
+		System.out.println(arr[1]);
+		
+	}
+	static void Go(int N) {
+		Queue<Integer> queue = new LinkedList<>();
+		queue.offer(N);
+		visited[N] = true;
+		
+		while(!queue.isEmpty()) {
+			int now = queue.poll();
+			int tmp = 0;
+			for(int i=0; i<3; i++) {
+				if(i == 0) {
+					if(now%3 == 0) {
+						tmp = now / 3;
+					}else {
+						continue;
+					}
+				}else if(i == 1) {
+					if(now%2 == 0) {
+						tmp = now / 2;
+					}else {
+						continue;
+					}
+				}else {
+					tmp = now - 1;
+				}
+				
+				if(tmp < 0 || visited[tmp]) {
+					continue;
+				}
+				
+				arr[tmp] = arr[now] + 1;
+				queue.offer(tmp);
+				visited[tmp] = true;
 			}
 		}
-		System.out.println(dp[X]);
+ 		
 	}
 }
