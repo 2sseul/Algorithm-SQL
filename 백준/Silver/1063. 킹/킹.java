@@ -1,136 +1,101 @@
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.Arrays;
-import java.util.StringTokenizer;
+import java.io.*;
+import java.util.*;
 
 public class Main {
-	static int map[][];
-	static int movingX[] = {0,0,1,-1,-1,-1,1,1};
-	static int movingY[] = {1,-1,0,0,1,-1,1,-1};
-	public static void main(String[] args) throws IOException {
-		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-		StringTokenizer st;
+	static BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+	static BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+	static StringBuilder sb = new StringBuilder();
+	static int M = 8;
+	static int map[][] = new int[M][M];
+	//LT T RT L R LB B RB
+	static int xR[] = {-1, -1, -1, 0, 0, 1, 1, 1};
+	static int yL[] = {-1, 0, 1, -1, 1, -1, 0, 1};
+	static int N; 
+	static class Node{
+		int kx;
+		int ky;
+		int sx;
+		int sy;
+		Node(int kx, int ky, int sx, int sy){
+			this.kx = kx;
+			this.ky = ky;
+			this.sx = sx;
+			this.sy = sy;
+		}
+	}
+	public static void main(String[] args) throws Exception{
+		StringTokenizer st = new StringTokenizer(br.readLine());
+		String king_tmp = st.nextToken();
+		String stone_tmp = st.nextToken();
+		N = Integer.parseInt(st.nextToken());
 		
-		map = new int[8][8];
+		int king_start[] = {Integer.valueOf(king_tmp.charAt(0)-'A'), 7-(king_tmp.charAt(1)-49)};
+		int stone_start[] = {Integer.valueOf(stone_tmp.charAt(0)-'A'), 7-(stone_tmp.charAt(1)-49)};
 		
-		st = new StringTokenizer(br.readLine());
+		int move[] = new int[N];
+		Stamp(move);
 		
-		String king = st.nextToken();
-		char king1 = king.charAt(0);
-		char king2 = king.charAt(1);
-		int kingX = Math.abs(((int)king2)-56);
-		int kingY = ((int)king1)-65;
-		map[kingX][kingY] = 1;
+		Move(king_start, stone_start, move);
 		
-		String stone = st.nextToken();
-		char stone1 = stone.charAt(0);
-		char stone2 = stone.charAt(1);
-		int stoneX = Math.abs(((int)stone2)-56);
-		int stoneY =((int)stone1)-65;
-		map[stoneX][stoneY] = 2;
+		bw.write(sb.toString());
+		bw.close();
+	}
+	static void Move(int[] king_start, int[] stone_start, int[] move) {
+		Queue<Node> q = new LinkedList<>();
+		q.offer(new Node(king_start[1], king_start[0], stone_start[1], stone_start[0]));
 		
-		int move = Integer.parseInt(st.nextToken());
-		
-		for(int i=0;i<move;i++) {
-			String where = br.readLine();
-			int num = move(where);
-			int newKingX = kingX + movingX[num];
-			int newKingY = kingY + movingY[num];
-			//king이 범위 내에 존재하면, 
-			if(isValid(newKingX, newKingY)) {
-				//만약 이동했는데 돌이 있으면,
-				if(isStone(newKingX,newKingY)) {
-					int newStoneX = stoneX + movingX[num];
-					int newStoneY = stoneY + movingY[num];
-					//돌이 이동했는데 범위 내에 존재하면,
-					if(isValid(newStoneX,newStoneY)) {
-						map[stoneX][stoneY]=0;
-						map[kingX][kingY]=0;
-						kingX = newKingX;
-						kingY = newKingY;
-						stoneX = newStoneX;
-						stoneY = newStoneY;
-						map[newKingX][newKingY]=1;
-						map[newStoneX][newStoneY]=2;
-					//돌이 이동했는데 범위 밖이라면,
-					}else {
+		while(true) {
+			for(int i=0; i<=N; i++) {
+				Node n = q.poll();
+				if(i == N) {
+					sb.append(Character.valueOf((char) (n.ky+65))).append(8-n.kx).append('\n');
+					sb.append(Character.valueOf((char) (n.sy+65))).append(8-n.sx);
+					return;
+				}
+				int new_kx = n.kx + xR[move[i]];
+				int new_ky = n.ky + yL[move[i]];
+				int new_sx = n.sx;
+				int new_sy = n.sy;
+				if(new_kx == new_sx && new_ky == new_sy) {
+					new_sx += xR[move[i]];
+					new_sy += yL[move[i]];
+					
+					if(new_sx < 0 || new_sx >= 8 || new_sy < 0 || new_sy >= 8) {
+						q.offer(new Node(n.kx, n.ky, n.sx, n.sy));
 						continue;
 					}
-				//만약 이동했는데 돌이 없으면,
-				}else {
-					map[kingX][kingY]=0;
-					kingX = newKingX;
-					kingY = newKingY;
-					map[newKingX][newKingY]=1;
 				}
-			//king이 범위 내에 존재하지 않으면,
-			}else {
-				continue;
+				
+				if(new_kx < 0 || new_kx >= 8 || new_ky < 0 || new_ky >= 8) {
+					q.offer(new Node(n.kx, n.ky, n.sx, n.sy));
+					continue;
+				}
+				
+				q.offer(new Node(new_kx, new_ky, new_sx, new_sy));
 			}
 		}
-		
-		String alpK = translate(kingY);
-		int ansK = Math.abs(kingX-7)+1;
-		String alpS = translate(stoneY);
-		int ansS = Math.abs(stoneX-7)+1;
-		System.out.println(alpK+ansK);
-		System.out.println(alpS+ansS);
 	}
 	
-	private static String translate(int num) {
-		if(num == 0) {
-			return "A";
-		}else if(num == 1) {
-			return "B";
-		}else if(num == 2) {
-			return "C";
-		}else if(num == 3) {
-			return "D";
-		}else if(num == 4) {
-			return "E";
-		}else if(num == 5) {
-			return "F";
-		}else if(num == 6) {
-			return "G";
-		}else if(num == 7) {
-			return "H";
+	static void Stamp(int[] move) throws Exception {
+		for(int i=0; i<N; i++) {
+			String tmp = br.readLine();
+			if(tmp.equals("LT")) {
+				move[i] = 0;
+			}else if(tmp.equals("T")) {
+				move[i] = 1;
+			}else if(tmp.equals("RT")) {
+				move[i] = 2;
+			}else if(tmp.equals("L")) {
+				move[i] = 3;
+			}else if(tmp.equals("R")) {
+				move[i] = 4;
+			}else if(tmp.equals("LB")) {
+				move[i] = 5;
+			}else if(tmp.equals("B")) {
+				move[i] = 6;
+			}else if(tmp.equals("RB")) {
+				move[i] = 7;
+			}
 		}
-		return null;
-	}
-
-	private static boolean isStone(int newKingX, int newKingY) {
-		if(map[newKingX][newKingY]==2) {
-			return true;
-		}
-		return false;
-	}
-
-	private static boolean isValid(int newKingX, int newKingY) {
-		if(newKingX<0 || newKingX>=8 || newKingY<0 || newKingY>=8) {
-			return false;
-		}
-		return true;
-	}
-	
-	private static int move(String where) {
-		if(where.equals("R")) {
-			return 0;
-		}else if(where.equals("L")) {
-			return 1;
-		}else if(where.equals("B")) {
-			return 2;
-		}else if(where.equals("T")) {
-			return 3;
-		}else if(where.equals("RT")) {
-			return 4;
-		}else if(where.equals("LT")) {
-			return 5;
-		}else if(where.equals("RB")) {
-			return 6;
-		}else if(where.equals("LB")) {
-			return 7;
-		}
-		return 0;	
 	}
 }
