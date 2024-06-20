@@ -1,111 +1,113 @@
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.Queue;
-import java.util.StringTokenizer;
+import java.io.*;
+import java.util.*;
 
 public class Main {
-    static int l, r, c;
-    static char[][][] building;
-    //동서남북상하
-    //동서남북은 층 안바뀌고, 상하만 층이 바뀜.
-    static int moveX[] = {0,0,0,0,1,-1};
-    static int moveR[] = {0,0,1,-1,0,0};
-    static int moveC[] = {1,-1,0,0,0,0};
-    static boolean visited[][][];
-    static class Node{
-        int x;
-        int y;
-        int z;
-        int canEscape;
-        Node(int x, int y, int z, int canEscape){
-            this.x = x;
-            this.y = y;
-            this.z = z;
-            this.canEscape = canEscape;
-        }
-    }
-    public static void main(String[] args) throws IOException {
-        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        StringTokenizer st;
-
-    while(true) {
-        Queue<Node> queue = new LinkedList<>();
-        st = new StringTokenizer(br.readLine());
-        l = Integer.parseInt(st.nextToken());
-        r = Integer.parseInt(st.nextToken());
-        c = Integer.parseInt(st.nextToken());
-
-        if(l==0&&r==0&&c==0) {
-            break;
-        }
-
-        building = new char[l][r][c];
-        visited = new boolean[l][r][c];
-        for(int i=0;i<l;i++) {
-            for(int j=0;j<r+1;j++) {
-                String s = br.readLine();
-                if(s.equals("")) {
-                    continue;
-                }
-                building[i][j]=s.toCharArray();
-            }
-        }
-
-        for(int i=0;i<l;i++) {
-            for(int j=0;j<r;j++) {
-                for(int k=0;k<c;k++) {
-                    if(building[i][j][k]=='S') {
-                    	visited[i][j][k] = true;
-                        queue.add(new Node(i,j,k,0));
-                        
-                    }
-                }
-            }
-        }
-        
-        boolean check = false;
-        while(!queue.isEmpty()) {
-            Node n = queue.poll();
-            
-            if(building[n.x][n.y][n.z]=='E') { 
-                if(n.canEscape>0) {
-                    check = true;
-                    System.out.println("Escaped in "+n.canEscape+" minute(s).");
-                    break;
-                }
-            }
-
-            for(int i=0;i<6;i++) {
-                int newL = n.x + moveX[i];
-                int newR = n.y + moveR[i];
-                int newC = n.z + moveC[i];
-
-                if(newL<0 || newL>=l || newR<0 || newR>=r || newC<0 || newC>=c) {
-                    continue;
-                }
-
-                if(building[newL][newR][newC]=='#') {
-                    continue;
-                }
-
-                if(visited[newL][newR][newC]) {
-                    continue;
-                }
-
-                if(building[newL][newR][newC]=='.' || building[newL][newR][newC]=='E' && !visited[newL][newR][newC]) {
-                    visited[newL][newR][newC] = true;
-                    queue.add(new Node(newL, newR, newC, n.canEscape+1));
-                }
-            }
-        }
-        
-        
-        if(!check) { //만약 도착지에 도달하지 못했다면? 이 추가가 되어야해
-            System.out.println("Trapped!");
-        }
-    }
-}
+	static int L, R, C, ans;
+	static char map[][][];
+	static boolean visited[][][];
+	static StringBuilder sb = new StringBuilder();
+	//상하좌우 위층 아래층
+	static int moveF[] = {0, 0, 0, 0, -1, 1};
+	static int moveR[] = {-1, 1, 0, 0, 0, 0};
+	static int moveC[] = {0, 0, -1, 1, 0, 0};
+	static class Node{
+		int f;
+		int x;
+		int y;
+		int cnt;
+		Node(int f, int x, int y, int cnt){
+			this.f = f;
+			this.x = x;
+			this.y = y;
+			this.cnt = cnt;
+		}
+	}
+	public static void main(String[] args) throws Exception{
+		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+		BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+		
+		while(true) {
+			StringTokenizer st = new StringTokenizer(br.readLine());
+			L = Integer.parseInt(st.nextToken()); //층수
+			R = Integer.parseInt(st.nextToken()); //행
+			C = Integer.parseInt(st.nextToken()); //열
+			ans = 0;
+						
+			if(L == 0 && R == 0 && C == 0) {
+				break;
+			}
+			
+			map = new char[L][R][C];
+			visited = new boolean[L][R][C];
+			
+			//map 셋팅
+			int floor = 0;
+			int c = 0;
+			while(true) {
+				String tmp = br.readLine();
+				if(tmp.length() == 0) {
+					if(floor == L) {
+						break;
+					}
+					continue;
+				}
+				if(c == R-1) {
+					map[floor][c] = tmp.toCharArray();
+					floor++;
+					c = 0;
+					continue;
+				}
+				map[floor][c] = tmp.toCharArray();
+				c++;
+			}
+			
+			//시작점 찾기
+			for(int i=0; i<L; i++) {
+				for(int j=0; j<R; j++) {
+					for(int k=0; k<C; k++) {
+						if(map[i][j][k] == 'S') {
+							Escape(i, j, k);
+						}else {
+							continue;
+						}
+					}
+				}
+			}
+			
+			if(ans > 0) {
+				sb.append("Escaped in ").append(ans).append(" minute(s).").append('\n');
+			}else {
+				sb.append("Trapped!").append('\n');
+			}
+		}
+		bw.write(sb.toString());
+		bw.close();
+	}
+	public static void Escape(int f, int x, int y) {
+		Queue<Node> q = new LinkedList<>();
+		q.offer(new Node(f, x, y, 0));
+		visited[f][x][y] = true;
+		
+		while(!q.isEmpty()) {
+			Node n = q.poll();
+			
+			if(map[n.f][n.x][n.y] == 'E') {
+				ans = n.cnt;
+			}
+			
+			for(int i=0; i<6; i++) {
+				int newF = moveF[i] + n.f;
+				int newX = moveR[i] + n.x;
+				int newY = moveC[i] + n.y;
+				
+				if(newF >= L || newF < 0 || newX >= R || newX < 0 || newY >= C || newY < 0 
+						|| map[newF][newX][newY] == '#' || visited[newF][newX][newY]) {
+					continue;
+				}
+				
+				visited[newF][newX][newY] = true;
+				q.offer(new Node(newF, newX, newY, n.cnt + 1));
+			}
+		}
+	}
 }
