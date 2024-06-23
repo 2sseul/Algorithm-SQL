@@ -1,36 +1,38 @@
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.Arrays;
-import java.util.StringTokenizer;
+import java.io.*;
+import java.util.*;
 
 public class Main {
-	public static void main(String[] args) throws NumberFormatException, IOException {
+	static int N, M;
+	static int arr[];
+	static boolean visited[];
+	public static void main(String[] args) throws Exception{
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-		StringTokenizer st;
+		BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
 		
-		int N = Integer.parseInt(br.readLine());
-		int M = Integer.parseInt(br.readLine());
+		N = Integer.parseInt(br.readLine());
+		M = Integer.parseInt(br.readLine());
+		arr = new int[N];
+		visited = new boolean[N];
 		
-		int arr[] = new int[N];
-		
-		st = new StringTokenizer(br.readLine());
-		for(int i=0;i<N;i++) {
+		StringTokenizer st = new StringTokenizer(br.readLine());
+		for(int i=0; i<N; i++) {
 			arr[i] = Integer.parseInt(st.nextToken());
 		}
 		
 		Arrays.sort(arr);
 		
-		int left = 0, right = arr.length-1;
-		int sum = 0, cnt = 0;
-		while(right > left) {
-			sum = arr[left] + arr[right];
-			if(sum <= M) {
+		int left = 0;
+		int right = N-1;
+		int cnt = 0;
+		while(left < right) {
+			int sum = arr[left] + arr[right];
+			if(sum < M) {
 				left++;
-			}else {
+			}else if(sum > M) {
 				right--;
-			}
-			if(sum == M) {
+			}else {
+				left++;
+				right--;
 				cnt++;
 			}
 		}
