@@ -1,56 +1,64 @@
-import java.io.*;
-import java.util.*;
-
+import java.util.Map;
+import java.util.HashMap;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.Arrays;
 class Solution {
+    static int ascii, idx, i;
+    static String before, tmp;
+    static Map<String, Integer> map;
+    static List<Integer> list;
     public List<Integer> solution(String msg) {
-    PriorityQueue<String> pq = new PriorityQueue<>(new Comparator<>(){
-            public int compare(String o1, String o2){
-                if(o1.length() > o2.length()){
-                    return -1;
-                }else if(o2.length() < o1.length()){
-                    return 1;
+        map = new HashMap<>();
+        list = new ArrayList<>();
+        ascii = 65;
+        for(int j=1;j<=26;j++) {
+            map.put(String.valueOf((char)ascii),j);
+            ascii++;
+        }
+        idx = 27;
+        tmp = String.valueOf(msg.charAt(0));
+        i=1;
+        boolean check = false;
+        while(true) {
+            if(i == msg.length()){
+                if(!map.containsKey(tmp)){
+                    map.put(tmp, idx);
+                    list.add(map.get(before));
+                    before="";
+                    tmp = tmp.substring(tmp.length()-1,tmp.length());
+                    idx++;
+                    i -= 1;
+                    check = true;
+                }else{
+                    list.add(map.get(tmp));
+                    break;
                 }
-                return 0;
             }
-        });
-        HashMap<String, Integer> map = new HashMap<>();
-        List<Integer> answer = new ArrayList<>();
-        
-        for(int i=1; i<=26; i++){
-            map.put(((char)(i+64))+"", i);
-        }
-        int num = 27;
-        int start = 0;
-        int cnt = 1;
-        
-    for(int i=0; i<msg.length(); i++){
-        int max = -1;
-        pq.clear();
-        for(int j=1; j<msg.length()-i+1; j++){
-            String tmp = msg.substring(i, i+j);
-            if(map.containsKey(tmp)){
-                pq.offer(tmp);
-                max = Math.max(max, i+j);
+            if(map.containsKey(tmp)) {
+                //before: 이전까지 최장 문자열
+                before = tmp;
+                if(!check){
+                    //tmp: 새로 넣어야될 단어
+                    tmp+=String.valueOf(msg.charAt(i));
+                }
+                //i를 사용해서 맨 뒤에 붙여야할 문자를 지정해줌.
+                i++;
             }
-        }
-        
-        String word = pq.poll();
-        answer.add(map.get(word));
-        
-        if(max != msg.length()){
-            String longWord = word+msg.substring(max, max+1);
-            if(!map.containsKey(longWord)){
-                map.put(longWord, num);
-                num++;
+            //만약 사전에 없으면,
+            else {
+                //이전까지의 최장 문자열 숫자를 정답에 넣어
+                list.add(map.get(before));
+                //그리고 이전까지의 문자열 초기화
+                before="";
+                //그리고 사전에 새로 넣어야할 단어를 넣어줘
+                map.put(tmp, idx);
+                //그리고 tmp의 맨 끝에 있는 단어로 잘라.
+                tmp = tmp.substring(tmp.length()-1,tmp.length());
+                //사전 숫자++
+                idx++;
             }
         }
-        
-        if(word.length() >= 2){
-            i += (word.length()-1);
-        }
-    }
-        
-        
-        return answer;
+        return list;
     }
 }
