@@ -3,36 +3,34 @@ import java.util.*;
 
 class Solution {
     public int solution(int[] scoville, int K) {
-        PriorityQueue<Integer> pq = new PriorityQueue<>(new Comparator<>(){
-            public int compare(Integer o1, Integer o2){
-                return o1-o2;
-            }
-        });
+        PriorityQueue<Integer> pq = new PriorityQueue<>();
         
-        for(int i=0; i<scoville.length; i++){
-            pq.offer(scoville[i]);   
+        for(int i: scoville){
+            pq.offer(i);
         }
         
-        int cnt = 0;
+        int answer = 0;
         while(!pq.isEmpty()){
-            if(pq.size()==1){
-                int num = pq.peek();
-                if(num < K){
-                    cnt = -1;
+            if(pq.size() >= 2){
+                int weakHotFood1 = pq.poll();
+                int weakHotFood2 = pq.poll();   
+                if(weakHotFood1 < K || weakHotFood2 < K){
+                    answer++;
+                    pq.offer(weakHotFood1 + (weakHotFood2 * 2));
+                }else{
+                    continue;
+                }
+            }else{
+                int lastOne = pq.peek();
+                if(lastOne >= K){
+                    pq.poll();
+                }else{
+                    answer = -1;
                     break;
                 }
             }
-            int smallOne = pq.poll();
-            if(smallOne >= K){
-                break;
-            }
-            int smallTwo = pq.poll();
-            
-            int newOne = smallOne + smallTwo*2;
-            cnt++;
-            pq.offer(newOne);
         }
-        
-        return cnt;
+
+        return answer;
     }
 }
