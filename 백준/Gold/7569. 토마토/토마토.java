@@ -1,106 +1,93 @@
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.LinkedList;
-import java.util.Queue;
-import java.util.StringTokenizer;
+import java.io.*;
+import java.util.*;
 
 public class Main {
-	static int M;
-	static int N;
-	static int H;
-	static int box[][][];
-	static int day;
-	static class Node{
+	static class Tomato{
 		int x;
 		int y;
-		int z;
-		Node(int x, int y, int z){
+		int h;
+		int cnt;
+		Tomato(int x, int y, int h, int cnt){
 			this.x = x;
 			this.y = y;
-			this.z = z;
+			this.h = h;
+			this.cnt = cnt;
 		}
 	}
-	public static void main(String[] args) throws IOException {
+	static int M, N, H, min;
+	static int moveX[] = {-1, 1, 0, 0, 0, 0};
+	static int moveY[] = {0, 0, -1, 1, 0, 0};
+	static int moveH[] = {0, 0, 0, 0, -1, 1};
+	static int map[][][];
+	static Queue<Tomato> q = new LinkedList<>();
+	public static void main(String[] args) throws Exception{
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+		
 		StringTokenizer st = new StringTokenizer(br.readLine());
-		Queue<Node> queue = new LinkedList<>();
-		StringBuilder sb = new StringBuilder();
+		M = Integer.parseInt(st.nextToken());
+		N = Integer.parseInt(st.nextToken());
+		H = Integer.parseInt(st.nextToken());
 		
-		M = Integer.parseInt(st.nextToken());	//가로
-		N = Integer.parseInt(st.nextToken());	//세로
-		H = Integer.parseInt(st.nextToken());	//상자 수
+		map = new int[H][N][M];
 		
-		box = new int[H][N][M];
-		
-		for(int i=0;i<H;i++) {
-			for(int j=0;j<N;j++) {
-				st = new StringTokenizer(br.readLine());
-				for(int k=0;k<M;k++) {
-					box[i][j][k]=Integer.parseInt(st.nextToken());
-				}
-			}
+		for (int i = 0; i < H; i++) { 
+		    for (int j = 0; j < N; j++) { 
+		        st = new StringTokenizer(br.readLine());
+		        for (int k = 0; k < M; k++) { 
+		            map[i][j][k] = Integer.parseInt(st.nextToken());
+		            if(map[i][j][k] == 1) {
+		            	q.offer(new Tomato(j, k, i, 0));
+		            }
+		        }
+		    }
 		}
 		
-		for(int i=0;i<H;i++) {
-			for(int j=0;j<N;j++) {
-				for(int k=0;k<M;k++) {
-					if(box[i][j][k]==1) {
-						queue.add(new Node(i,j,k));
-					}
-				}
-			}
-		}
+		BFS();
 		
-		while(!queue.isEmpty()) {
-			Node n = queue.poll();
-			
-			int height[]= {0,0,0,0,-1,1};
-			int row[]= {0,0,-1,1,0,0};
-			int col[]= {1,-1,0,0,0,0};
-			
-			for(int i=0;i<6;i++) {
-				int new_height = n.x + height[i];
-				int new_row = n.y + row[i];
-				int new_col = n.z + col[i];
-				
-				if(new_height<0 || new_height>=H || new_row<0 || new_row>=N || new_col <0 || new_col>=M) {
-					continue;
-				}
-				
-				if(box[new_height][new_row][new_col]!=0) {
-					continue;
-				}
-				
-				box[new_height][new_row][new_col]=box[n.x][n.y][n.z]+1;
-				
-				queue.add(new Node(new_height,new_row,new_col));
-			}
-			
-		}
+		int count = Count();
 		
-		int result = Integer.MIN_VALUE;
-		int ans = 0;
-		for(int i=0;i<H;i++) {
-			for(int j=0;j<N;j++) {
-				for(int k=0;k<M;k++) {
-					if(box[i][j][k]==0) {
-						ans = -1;
-					}
-					result = Math.max(result, box[i][j][k]);
-				}
-			}
-		}
-		if(result == 1) {
-			sb.append(0);
+		int answer = 0;
+		if(count > 0) {
+			answer = -1;
 		}else {
-			if(ans == -1) {
-				sb.append(-1);
-			}else {
-				sb.append(result-1);
-			}
+			answer = min;
 		}
 		
-		System.out.println(sb.toString());
+		System.out.println(answer);
+		
+	}
+	static int Count() {
+		int c = 0;
+		for(int i = 0; i < H; i++) {
+			for(int j = 0; j < N; j++) {
+				for(int k = 0; k < M; k++) {
+					if(map[i][j][k] == 0) {
+						c++;
+					}
+				}
+			}
+		}
+		return c;
+	}
+	static void BFS() {
+		while(!q.isEmpty()) {
+			Tomato t = q.poll();
+			
+			for(int i=0; i<6; i++) {
+				int newX = moveX[i] + t.x;
+				int newY = moveY[i] + t.y;
+				int newH = moveH[i] + t.h;
+				
+				if(newX < 0 || newX >= N || newY < 0 || newY >= M || newH < 0 || newH >= H || map[newH][newX][newY] == -1 || map[newH][newX][newY] == 1) {
+					continue;
+				}
+				
+				map[newH][newX][newY] = 1;
+				
+				q.offer(new Tomato(newX, newY, newH, t.cnt + 1));
+			}
+			
+			min = Math.max(min, t.cnt);
+		}
 	}
 }
