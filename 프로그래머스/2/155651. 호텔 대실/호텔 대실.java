@@ -16,18 +16,19 @@ class Solution {
         // book_time을 오름차순으로 정렬
         Arrays.sort(book_time, new Comparator<String[]>(){
            public int compare(String[] o1, String[] o2) {
-                return o1[0].compareTo(o2[0]);
+               if(o1[0].equals(o2[0])){
+                    return o1[1].compareTo(o2[1]);
+               }else{
+                    return o1[0].compareTo(o2[0]);   
+               }
            }
         });
-        
-        // System.out.println(Arrays.deepToString(book_time));
         
         for(int i=0; i<N; i++){
             if(!visited[i]){
                 visited[i] = true;
                 dfs(i, book_time);
                 answer++;
-                // System.out.println(Arrays.toString(visited));
             }else{
                 continue;
             }
@@ -39,7 +40,6 @@ class Solution {
     static void dfs(int idx, String[][] time){
         for(int i=0; i<N; i++){
             if(!visited[i] && time[idx][1].compareTo(time[i][0]) <= 0){
-                // System.out.println(time[idx][1]+" "+time[i][0]+" "+time[idx][1].compareTo(time[i][0]));
                 visited[i] = true;
                 dfs(i, time);
                 break;
