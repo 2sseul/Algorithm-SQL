@@ -2,63 +2,47 @@ import java.io.*;
 import java.util.*;
 
 public class Main {
-	static Stack<Integer> stack = new Stack<>();
-	static 	StringBuilder sb = new StringBuilder();
-	public static void main(String[] args) throws Exception{ 
-		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+    static Stack<Integer> stack = new Stack<>();
+    public static void main(String[] args) throws Exception{
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        StringBuilder sb = new StringBuilder();
 
-		int N = Integer.parseInt(br.readLine());
-		
-		for(int i=0; i<N; i++) {
-			String what = br.readLine();
-			if(what.contains("push")) {
-				int num = Integer.parseInt(what.substring(5, what.length()));
-				Push(num);
-			}else if(what.equals("pop")) {
-				Pop();
-			}else if(what.equals("size")) {
-				Size();
-			}else if(what.equals("empty")) {
-				Empty();
-			}else if(what.equals("top")) {
-				Top();
-			}
-		}
-		System.out.println(sb.toString());
-	}
+        int N = Integer.parseInt(br.readLine());
 
-	private static void Push(int num) {
-		stack.push(num);
-		
-	}
+        for(int i=0; i<N; i++){
+            String tmp[] = br.readLine().split(" ");
 
-	private static void Pop() {
-		if(!stack.isEmpty()) {
-			int tmp = stack.pop();
-			sb.append(tmp).append('\n');
-		}else {
-			sb.append("-1").append('\n');
-		}
-	}
+            String order = tmp[0];
+            int number = 0;
+            if(tmp.length >= 2){
+                number = Integer.parseInt(tmp[1]);
+            }
 
-	private static void Size() {
-		sb.append(stack.size()).append('\n');
-		
-	}
-	
-	private static void Empty() {
-		if(!stack.isEmpty()) {
-			sb.append("0").append('\n');
-		}else {
-			sb.append("1").append('\n');
-		}
-	}
-	
-	private static void Top() {
-		if(stack.isEmpty()) {
-			sb.append("-1").append('\n');
-		}else {
-			sb.append(stack.peek()).append('\n');
-		}
-	}
+            if(order.equals("push")){
+                stack.push(number);
+            }else if(order.equals("pop")){
+                if(stack.isEmpty()){
+                    sb.append(-1).append('\n');
+                }else{
+                    int pop = stack.pop();
+                    sb.append(pop).append('\n');
+                }
+            }else if(order.equals("size")){
+                sb.append(stack.size()).append('\n');
+            }else if(order.equals("empty")){
+                if(stack.isEmpty()){
+                    sb.append(1).append('\n');
+                }else{
+                    sb.append(0).append('\n');
+                }
+            }else if(order.equals("top")) {
+                if (stack.isEmpty()) {
+                    sb.append(-1).append('\n');
+                } else{
+                    sb.append(stack.peek()).append('\n');
+                }
+            }
+        }
+        System.out.println(sb);
+    }
 }
